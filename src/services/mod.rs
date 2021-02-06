@@ -1,5 +1,12 @@
-use reqwest::{Client, Error, Response};
+use reqwest::{Client, Error, Response, StatusCode};
+use serde::de::DeserializeOwned;
 use std::time::Duration;
+
+#[derive(Debug)]
+pub enum FetcherError {
+    FetchError(String),
+}
+impl warp::reject::Reject for FetcherError {}
 
 pub fn get_client() -> Result<Client, Error> {
     reqwest::Client::builder()
@@ -21,10 +28,31 @@ impl Fetcher {
         }
     }
 
-    pub async fn fetch(&self, path: String) -> Result<Response, Error> {
+    async fn get(&self, path: String) -> Result<Response, Error> {
         self.client
             .get(&format!("{}/{}", self.base_url, path))
             .send()
             .await
+    }
+
+    pub async fn fetch<T>(&self, path: &str, text: &str) -> Result<T, FetcherError>
+    where
+        T: DeserializeOwned,
+    {
+        let resp = self
+            .get(format!("{}{}", path, text))
+            .await
+            .map_err(|e| FetcherError::FetchError(e.to_string()))?;
+
+        match resp.status() {
+            StatusCode::OK => resp
+                .json::<T>()
+                .await
+                .map_err(|e| FetcherError::FetchError(e.to_string())),
+            s => Err(FetcherError::FetchError(format!(
+                "KO 👎, [{}] {}!",
+                self.base_url, s
+            ))),
+        }
     }
 }

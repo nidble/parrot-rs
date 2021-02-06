@@ -1,4 +1,3 @@
-use reqwest::StatusCode;
 use serde::Serialize;
 use warp::reply::WithStatus;
 
@@ -19,20 +18,12 @@ pub async fn handle_pokemon(
     let client = get_client().map_err(|_e| warp::reject::reject())?;
 
     let fetch_pokeapi = Fetcher::new(&client, "https://pokeapi.co");
-    let pokemon_resp = fetch_pokeapi
-        .fetch(format!("api/v2/ability/{}", name))
+    let poke_api: PokeApi = fetch_pokeapi
+        .fetch("api/v2/ability/", &name)
         .await
-        .map_err(|_e| warp::reject::reject())?;
+        .map_err(|e| warp::reject::custom(e))?;
 
-    let poke_api = match pokemon_resp.status() {
-        StatusCode::OK => pokemon_resp
-            .json::<PokeApi>()
-            .await
-            .map_err(|_e| warp::reject::reject()),
-        _s => todo!(),
-    }?;
-
-    let description = poke_api
+    let text = poke_api
         .effect_entries
         .iter()
         .find(|e| e.language.name == "en")
@@ -40,18 +31,10 @@ pub async fn handle_pokemon(
         .unwrap();
 
     let fetch_funtrans = Fetcher::new(&client, "https://api.funtranslations.com");
-    let funtrans_resp = fetch_funtrans
-        .fetch(format!("translate/shakespeare.json?text={}", description))
+    let funtrans_api: Funtranslations = fetch_funtrans
+        .fetch("translate/shakespeare.json?text=", &text)
         .await
-        .map_err(|_e| warp::reject::reject())?;
-
-    let funtrans_api = match funtrans_resp.status() {
-        StatusCode::OK => funtrans_resp
-            .json::<Funtranslations>()
-            .await
-            .map_err(|_e| warp::reject::reject()),
-        _s => todo!(),
-    }?;
+        .map_err(|e| warp::reject::custom(e))?;
 
     let description = funtrans_api.contents.translated;
     let json = warp::reply::json(&ApiResponse { description, name });
