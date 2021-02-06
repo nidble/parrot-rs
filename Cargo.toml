@@ -1,0 +1,7 @@
+[package]
+name = "parrot-rs"
+version = "0.1.0"
+authors = ["Antonino Bertulla <abertulla@gmail.com>"]
+edition = "2018"
+
+[dependencies]
