@@ -6,6 +6,7 @@ use std::env;
 
 use filters::api;
 use log::{log, Level};
+use services::{get_client, Fetcher};
 
 #[tokio::main]
 async fn main() {
@@ -14,7 +15,12 @@ async fn main() {
     }
     pretty_env_logger::init();
 
-    log!(Level::Info, "live & running...");
+    let client = get_client().expect("Client initialization failed");
+    let services = (
+        Fetcher::new(&client, "https://pokeapi.co"),
+        Fetcher::new(&client, "https://api.funtranslations.com"),
+    );
 
-    warp::serve(api()).run(([0, 0, 0, 0], 3030)).await
+    log!(Level::Info, "live & running...");
+    warp::serve(api(services)).run(([0, 0, 0, 0], 3030)).await
 }

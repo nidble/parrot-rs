@@ -12,3 +12,10 @@ warp = "0.3"
 reqwest = { version = "0.11.0", features = ["json"] }
 log = "0.4.14"
 pretty_env_logger = "0.4"
+
+[dev-dependencies]
+httpmock = "0.5.5"
+
+[lib]
+test = false
+doctest = false
