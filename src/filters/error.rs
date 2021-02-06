@@ -3,6 +3,8 @@ use serde::Serialize;
 use std::convert::Infallible;
 use warp::{Rejection, Reply};
 
+use crate::services::FetcherError;
+
 #[derive(Serialize)]
 struct ErrorMessage {
     code: u16,
@@ -16,6 +18,9 @@ pub async fn handle_rejection(err: Rejection) -> Result<impl Reply, Infallible> 
     if err.is_not_found() {
         code = StatusCode::NOT_FOUND;
         message = "not found";
+    } else if let Some(fetch_error) = err.find::<FetcherError>() {
+        code = fetch_error.get_status();
+        message = fetch_error.get_message();
     } else if let Some(_) = err.find::<warp::reject::MethodNotAllowed>() {
         code = StatusCode::METHOD_NOT_ALLOWED;
         message = "method not allowed";
