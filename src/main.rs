@@ -1,8 +1,11 @@
+mod filters;
+mod schema;
+mod services;
+
 use std::env;
 
-use log::{log, Level};
-mod filters;
 use filters::api;
+use log::{log, Level};
 
 #[tokio::main]
 async fn main() {
