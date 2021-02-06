@@ -1,7 +1,8 @@
 use std::env;
 
 use log::{log, Level};
-use warp::{http::Method, http::StatusCode, Filter};
+mod filters;
+use filters::api;
 
 #[tokio::main]
 async fn main() {
@@ -10,13 +11,7 @@ async fn main() {
     }
     pretty_env_logger::init();
 
-    let cors = warp::cors().allow_methods(&[Method::GET]);
-
-    let health = warp::path("healthz").map(|| StatusCode::OK);
-
-    let routes = health.with(cors);
-
     log!(Level::Info, "live & running...");
 
-    warp::serve(routes).run(([0, 0, 0, 0], 3030)).await
+    warp::serve(api()).run(([0, 0, 0, 0], 3030)).await
 }
