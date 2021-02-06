@@ -4,7 +4,7 @@ use warp::reply::WithStatus;
 
 use crate::{
     schema::{Funtranslations, PokeApi},
-    services::get_client,
+    services::{get_client, Fetcher},
 };
 
 #[derive(Serialize)]
@@ -18,9 +18,9 @@ pub async fn handle_pokemon(
 ) -> std::result::Result<WithStatus<warp::reply::Json>, warp::Rejection> {
     let client = get_client().map_err(|_e| warp::reject::reject())?;
 
-    let pokemon_resp = client
-        .get(&format!("https://pokeapi.co/api/v2/ability/{}", name))
-        .send()
+    let fetch_pokeapi = Fetcher::new(&client, "https://pokeapi.co");
+    let pokemon_resp = fetch_pokeapi
+        .fetch(format!("api/v2/ability/{}", name))
         .await
         .map_err(|_e| warp::reject::reject())?;
 
@@ -39,12 +39,9 @@ pub async fn handle_pokemon(
         .map(|e| e.effect.replace("\n", " "))
         .unwrap();
 
-    let funtrans_resp = client
-        .get(&format!(
-            "https://api.funtranslations.com/translate/shakespeare.json?text={}",
-            description
-        ))
-        .send()
+    let fetch_funtrans = Fetcher::new(&client, "https://api.funtranslations.com");
+    let funtrans_resp = fetch_funtrans
+        .fetch(format!("translate/shakespeare.json?text={}", description))
         .await
         .map_err(|_e| warp::reject::reject())?;
 
