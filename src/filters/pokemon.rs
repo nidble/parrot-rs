@@ -22,11 +22,8 @@ pub async fn handle_pokemon(
         .map_err(|e| warp::reject::custom(e))?;
 
     let text = poke_api
-        .effect_entries
-        .iter()
-        .find(|e| e.language.name == "en")
-        .map(|e| e.effect.replace("\n", " "))
-        .unwrap();
+        .get_description()
+        .map_err(|_e| warp::reject::not_found())?;
 
     let funtrans_api: Funtranslations = trans_fetcher
         .fetch("translate/shakespeare.json?text=", &text)
