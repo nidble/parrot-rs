@@ -13,6 +13,7 @@ fn pokemon(
 ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
     // GET /pokemon/:string
     warp::path("pokemon")
+        .and(warp::get())
         .and(warp::any().map(move || (services.clone())))
         .and(warp::path::param())
         .and_then(handle_pokemon)
