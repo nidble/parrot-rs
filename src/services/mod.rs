@@ -41,7 +41,7 @@ pub struct Fetcher {
 }
 
 impl Fetcher {
-    pub fn new<'a>(client: &Client, base_url: &'a str) -> Self {
+    pub fn new<T: Into<String>>(client: &Client, base_url: T) -> Self {
         Fetcher {
             client: client.clone(),
             base_url: base_url.into(),
