@@ -6,17 +6,15 @@ pub struct PokeApi {
 }
 
 impl PokeApi {
-    pub fn get_description(&self) -> Result<String, String> {
+    pub fn get_description(&self) -> Result<String, &'static str> {
         self.effect_entries
             .iter()
             .find(|e| e.language.name == "en")
             .map(|e| {
                 e.effect
-                    .replace("\n", "")
-                    .replace("\t", "")
-                    .replace("\r", "")
+                    .replace(|ch| ch == '\n' || ch == '\t' || ch == '\r', "")
             })
-            .ok_or("english description not found".to_string())
+            .ok_or("english description not found")
     }
 }
 
@@ -46,7 +44,7 @@ mod tests {
         ))
         .unwrap();
 
-        assert_eq!(p.get_description().unwrap(), "Salutamo picciotti.");
+        assert_eq!(p.get_description(), Ok("Salutamo picciotti.".to_string()));
     }
 
     #[test]
@@ -59,6 +57,6 @@ mod tests {
         .unwrap();
 
         let expected = result.get_description().err();
-        assert_eq!(expected, Some("english description not found".to_string()));
+        assert_eq!(expected, Some("english description not found"));
     }
 }
