@@ -28,7 +28,7 @@ make e2e
 ```
 
 ### Docker & containers
-You can ship a container version with the following comands:
+You can ship a container version with the following commands:
 
 
 ```bash
@@ -39,7 +39,7 @@ make docker-build 0.1.0
 make docker-run 0.1.0
 ```
 
-### Test
+## Test
 The full tests suite can be runned with:
 
 ```bash
@@ -52,9 +52,11 @@ Or if you only want to run integration test, raise the follow:
 make integration
 ```
 
-### Todo
+## Todo(s)
 
 - [ ] Reconsidering the introduction of .env file (i.e. [dotenv](https://crates.io/crates/dotenv)) if the project growths
+- [ ] Add Github Action
+- [ ] Provide unit test where missing 
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
