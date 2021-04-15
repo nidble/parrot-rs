@@ -54,6 +54,7 @@ make integration
 
 ## Todo(s)
 
+- [ ] Improve Dockerfile for Musl arch (i.e. [rust-small-docker-image](https://kerkour.com/blog/rust-small-docker-image/))
 - [ ] Reconsidering the introduction of .env file (i.e. [dotenv](https://crates.io/crates/dotenv)) if the project growths
 - [ ] Add Github Action
 - [ ] Provide unit test where missing 

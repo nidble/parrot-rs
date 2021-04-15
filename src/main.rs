@@ -8,6 +8,12 @@ use filters::api;
 use log::{log, Level};
 use services::{get_client, Fetcher};
 
+// Use Jemalloc only for musl-64 bits platforms
+#[cfg(all(target_env = "musl", target_pointer_width = "64"))]
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
+
 // TODO: considering an env file
 const POKEAPI_BASE_URL: &'static str = "https://pokeapi.co";
 const TRANSLATION_BASE_URL: &'static str = "https://api.funtranslations.com";

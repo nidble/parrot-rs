@@ -19,3 +19,6 @@ httpmock = "0.5.5"
 [lib]
 test = false
 doctest = false
+
+[target.'cfg(all(target_env = "musl", target_pointer_width = "64"))'.dependencies.jemallocator]
+version = "0.3"
