@@ -67,14 +67,27 @@ jobs:
           key: ${{ runner.os }}-sccache-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-sccache-
+
       - name: Start sccache server
         run: sccache --start-server
+
+      - name: Update local toolchain
+        run: |
+          rustup update
+          rustup component add clippy
+
+      - name: Run tests
+        run: |
+          cargo check
+          cargo clippy -- -D warnings
+          cargo test --all --verbose
+
       - name: Build
         run: cargo build --verbose
-      - name: Run tests
-        run: cargo test --verbose
+
       - name: Print sccache stats
         run: sccache --show-stats
+
       - name: Stop sccache server
         run: sccache --stop-server || true
 
