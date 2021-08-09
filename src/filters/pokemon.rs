@@ -19,7 +19,7 @@ pub async fn handle_pokemon(
     let poke_api: PokeApi = pokemon_fetcher
         .fetch("api/v2/ability/", &name)
         .await
-        .map_err(|e| warp::reject::custom(e))?;
+        .map_err(warp::reject::custom)?;
 
     let text = poke_api
         .get_description()
@@ -28,7 +28,7 @@ pub async fn handle_pokemon(
     let funtrans_api: Funtranslations = trans_fetcher
         .fetch("translate/shakespeare.json?text=", &text)
         .await
-        .map_err(|e| warp::reject::custom(e))?;
+        .map_err(warp::reject::custom)?;
 
     let description = funtrans_api.contents.translated;
     let json = warp::reply::json(&ApiResponse { description, name });

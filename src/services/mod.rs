@@ -4,23 +4,23 @@ use std::time::Duration;
 
 #[derive(Debug)]
 pub enum FetcherError {
-    RequestError(String),
-    ParseError(String),
-    ResponseError(String, StatusCode),
+    Request(String),
+    Parse(String),
+    Response(String, StatusCode),
 }
 
 impl FetcherError {
     pub fn get_message(&self) -> &str {
         match self {
-            FetcherError::RequestError(m) => m.as_ref(),
-            FetcherError::ParseError(m) => m.as_ref(),
-            FetcherError::ResponseError(m, _) => m.as_ref(),
+            FetcherError::Request(m) => m.as_ref(),
+            FetcherError::Parse(m) => m.as_ref(),
+            FetcherError::Response(m, _) => m.as_ref(),
         }
     }
 
     pub fn get_status(&self) -> StatusCode {
         match self {
-            FetcherError::ResponseError(_, status) => *status,
+            FetcherError::Response(_, status) => *status,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
@@ -62,14 +62,14 @@ impl Fetcher {
         let resp = self
             .get(format!("{}{}", path, text))
             .await
-            .map_err(|e| FetcherError::RequestError(e.to_string()))?;
+            .map_err(|e| FetcherError::Request(e.to_string()))?;
 
         match resp.status() {
             StatusCode::OK => resp
                 .json::<T>()
                 .await
-                .map_err(|e| FetcherError::ParseError(e.to_string())),
-            s => Err(FetcherError::ResponseError(
+                .map_err(|e| FetcherError::Parse(e.to_string())),
+            s => Err(FetcherError::Response(
                 format!("KO 👎, [{}] {}!", self.base_url, s),
                 s,
             )),

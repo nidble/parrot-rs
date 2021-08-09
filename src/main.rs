@@ -15,8 +15,8 @@ static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
 
 
 // TODO: considering an env file
-const POKEAPI_BASE_URL: &'static str = "https://pokeapi.co";
-const TRANSLATION_BASE_URL: &'static str = "https://api.funtranslations.com";
+const POKEAPI_BASE_URL: &str = "https://pokeapi.co";
+const TRANSLATION_BASE_URL: &str = "https://api.funtranslations.com";
 
 #[tokio::main]
 async fn main() {
